@@ -3,6 +3,10 @@ README
 Exploratory Lab 1: Web cartography
 Link to map: https://ubc-geos472-spring2022.github.io/msinghhunjan-web/Lab1Web/lab1.html
 
+Screenshot:
+
+![alt text](https://github.com/UBC-GEOS472-Spring2022/msinghhunjan-web/blob/gh-pages/Lab1Web/screenshot.png "Screenshot of Metro Vancouver Passenger Rail Map")
+
 Reflective analysis: Vancouver is amongst the largest cities of Canada and linked by various passenger rail services. However, only a few maps show all passenger rail routes on
 a single map which link Metro Vancouver with the adjacent Fraser Valley. So the purpose of this map is to show all of such routes and display where the rail lines start 
 paralleling water bodies. This information is intended for anyone who wishes to take a little scenic rail tour of Metro Vancouver covering the routes on both sides of the Fraser 
