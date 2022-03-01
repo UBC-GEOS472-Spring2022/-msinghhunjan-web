@@ -1,6 +1,10 @@
 # msinghhunjan-web
 README 
+
+
 Exploratory Lab 1: Web cartography
+
+
 Link to map: https://ubc-geos472-spring2022.github.io/msinghhunjan-web/Lab1Web/lab1.html
 
 Screenshot:
