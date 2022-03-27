@@ -40,3 +40,5 @@ I would've liked for my map to display community names and data from the individ
 It also would've been best if the lines of the exisiting NA rail, and the 2 alignments could've displayed in different colours. I initally wanted to use text boxes,
 but removed and replaced them with buttons when elements on my map were starting to break. The map was a lot simpler than what I initally had in mind, but hopefully 
 I can learn of what went wrong in the process and what could've been done to make my map better.
+
+Collaboration: I did not collaborate with anyone on this lab!
