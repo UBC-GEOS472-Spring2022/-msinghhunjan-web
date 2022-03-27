@@ -1,0 +1,322 @@
+<!DOCTYPE html><html><head>
+    <title>Leaflet Exercise</title>
+    <meta charset="utf-8">
+
+    <!-- Leaflet styles and code. Place in the <head></head> element. -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="leaflet.js"></script>
+
+    <!-- jQuery is a library that simplifies many things in JavaScript. 
+	     We'll use it to retrieve data from the web. -->
+    <script src="jquery-3.3.1.min.js"></script>
+
+    <script src="./p5.min.js"></script>
+    <!-- this should be unnecessary in this code, as we aren't using p5.js...
+       but since I'm showing you the code running in the p5 editor,
+       the editor expects p5.js to be here...
+       otherwise, it gives you a "TypeError: window.p5 is undefined".
+       We won't use any of p5.js's commands, though! -->
+    
+    <script src="leaflet.js"></script>
+    <script src="mapbox.js"></script>
+    <script src="jquery.min.js"></script>
+    <script src="leaflet.awesome-markers.js"></script>
+    <style type="text/css">
+    button {
+        width: 285px;
+    }
+    </style>
+  </head>
+
+  <body>
+    <div id="mapid" style="width: 1000px; height: 500px;"></div>
+    <!-- Our web map will get placed into this div element. And display all potential stations between Ft McMurray and the Alaska-Canada border -->
+
+     
+    
+     <div> 
+Select Alignment: (*Intersects: Possible points of interconnection to existing North American rail routes (Red Train Symbol))
+     </div>
+    <div class="btn-group">
+      
+      <button type="button" id="communities" class="btn btn-primary">A2A Alignment (&amp; possible Rail Intersects*)</button>
+      <button type="button" id="communities_alt" class="btn btn-primary">Alternative Alignment (&amp; Intersects*)</button>
+      <button type="button" id="show_all" class="btn btn-success">Show Both Alignments)</button>
+
+    
+     </div>
+    
+     <div> 
+Select Data:
+     </div>
+    
+        <div class="btn-group">
+      <button type="button" id="bus" class="btn btn-danger">Communities with Intercity Bus Service</button>
+      <button type="button" id="airports" class="btn btn-danger">Communities with Regular Air Traffic</button>
+
+              </div>
+    <div> 
+Display/Hide the existing rail network of Canada and the USA:
+     </div>
+
+      <div id="controls" style="margin: 15px;">
+      <button id="showAllExistingRail">Turn on North American Rail Network</button>
+      <button id="hideAllExistingRail">Turn off North American Rail Network</button>
+      <span style="display:inline-block; width: 50px"></span> 
+<button type="button" id="hide" class="btn btn-success">Clear All</button>
+     </div>
+    
+    
+    <script>
+        // Make a Leaflet map with L.map().
+        // Store the map in the variable 'map'.
+        // "mapid" is the 'id' of the DOM element to contain the map.
+        var map = L.map('mapid', {
+            center: [60.250199, -128.903729],
+            					zoom: 5
+          } // this object holds map options
+        );
+
+        var topoTiles = L.tileLayer(
+          'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: 'Basemap data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Basemap style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            
+          }
+        ).addTo(map);
+
+        // load GeoJSON from a file on the web
+        // $ is jQuery.
+ 
+      var trainIcon = L.AwesomeMarkers.icon({
+        prefix: 'fa', //font awesome rather than bootstrap
+        markerColor: 'red', // see colors above
+        icon: 'train' //http://fortawesome.github.io/Font-Awesome/icons/
+    });
+      
+      var busIcon = L.AwesomeMarkers.icon({
+        prefix: 'fa', //font awesome rather than bootstrap
+        markerColor: 'blue', // see colors above
+        icon: 'bus' //http://fortawesome.github.io/Font-Awesome/icons/
+    });
+      
+      var planeIcon = L.AwesomeMarkers.icon({
+        prefix: 'fa', //font awesome rather than bootstrap
+        markerColor: 'green', // see colors above
+        icon: 'plane' //http://fortawesome.github.io/Font-Awesome/icons/
+});
+      
+      var cityIcon = L.AwesomeMarkers.icon({
+        prefix: 'fa', //font awesome rather than bootstrap
+        markerColor: 'orange', // see colors above
+        opacity: 0.8,
+        fillOpacity: 0.8,
+        icon: 'compass' //http://fortawesome.github.io/Font-Awesome/icons/
+
+});
+   
+      var promise = $.getJSON("https://raw.githubusercontent.com/msinghhunjan/miscfiles/main/AlaskaToCanadaRailData.geojson");
+    promise.then(function(data) {
+      
+                
+
+      var intersects = L.geoJson(data, {
+      filter: function(feature, layer) {
+      return feature.properties.PointType == "Intersect";
+            },
+                  
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: trainIcon
+                }).on('click', function() {
+                    this.bindPopup(feature.properties.name).openPopup();
+                });
+            }
+});
+      var intersects_alt = L.geoJson(data, {
+            filter: function(feature, layer) {
+                return feature.properties.PointType == "Intersect1";
+            },    
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: trainIcon
+                }).on('mouseover', function() {
+                    this.bindPopup(feature.properties.name).openPopup();
+                });
+            }
+        });
+      var main_alignment = L.geoJson(data, {
+        filter: function(feature, layer) {
+                return feature.properties.Alignment == "A2A";  
+            },
+        });
+      var alt_alignment = L.geoJson(data, {
+        filter: function(feature, layer) {
+                return feature.properties.Alignment == "Alternative";
+            },
+        });
+      var communities = L.geoJson(data, {
+        filter: function(feature, layer) {
+                return feature.properties.PointType == "Community";
+            },
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: cityIcon
+                }).on('click', function() {
+                    this.bindPopup(feature.properties.station_name).openPopup();
+                });
+            }
+});
+      
+      
+      
+      var communities_alt = L.geoJson(data, {
+            filter: function(feature, layer) {
+                return feature.properties.PointType == "Community1";
+            },
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: cityIcon
+                }).on('click', function() {
+                    this.bindPopup(feature.properties.station_name).openPopup();
+                });
+            }
+});
+      
+      var USArail = L.geoJson(data, {
+            filter: function(feature, layer) {
+            
+      return feature.properties.COUNTRY == "USA";
+            },
+            pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                }).on('mouseover', function() {
+                    this.bindPopup(feature.properties.station_name).openPopup();
+                });
+            }
+        
+        });
+      
+      var CDNrail = L.geoJson(data, {
+            filter: function(feature, layer) {
+                
+      return feature.properties.COUNTRY == "CAN";
+            },
+        });
+      
+      var airports = L.geoJson(data, {
+            filter: function(feature, layer) {
+            return feature.properties.airport_with_regular_flights == "Yes";
+            },
+        pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: planeIcon
+                }).on('click', function() {
+                    this.bindPopup(feature.properties.station_name).openPopup();
+                });
+            }
+        });
+      
+      var bus = L.geoJson(data, {
+        filter: function(feature, layer) {
+        return feature.properties.bus_service == "Yes";
+            },
+        pointToLayer: function(feature, latlng) {
+                return L.marker(latlng, {
+                    icon: busIcon
+                }).on('click', function() {
+                    this.bindPopup(feature.properties.name).openPopup();
+                });
+            }
+        }); 
+      
+      
+      
+      //Figure this out
+        intersects.addTo(map)
+        communities.addTo(map)
+        main_alignment.addTo(map)
+      
+        // The JavaScript below is new
+        $("#communities").click(function() {
+            map.addLayer(communities)
+            map.addLayer(main_alignment)
+            map.removeLayer(alt_alignment)
+            map.removeLayer(communities_alt)
+            map.removeLayer(intersects_alt)
+            map.removeLayer(airports)
+            map.removeLayer(bus)
+          
+            map.addLayer(intersects)
+        });
+      //
+      $("#communities_alt").click(function() {
+            map.addLayer(communities_alt)
+            map.addLayer(alt_alignment)
+            map.removeLayer(main_alignment)
+            map.removeLayer(communities)
+            map.removeLayer(intersects)
+            map.removeLayer(airports)
+            map.removeLayer(bus)
+        
+            map.addLayer(intersects_alt)
+        });
+        $("#airports").click(function() {
+            map.addLayer(airports)
+            map.removeLayer(bus)
+            map.addLayer(alt_alignment)
+        } 
+                            );
+      // Show intersects_alt (Intersects (Alternative Alignment) instead of intersects (Proposed A2A))
+      $("#bus").click(function() {
+            map.addLayer(bus)
+            map.removeLayer(airports)
+            map.addLayer(alt_alignment)
+        });
+        
+      $("#hide").click(function() {
+            map.removeLayer(intersects)
+            map.removeLayer(main_alignment)
+            map.removeLayer(communities)
+            map.removeLayer(intersects_alt)
+            map.removeLayer(communities_alt)
+            map.removeLayer(alt_alignment)
+            map.removeLayer(airports)
+            map.removeLayer(bus)
+            map.removeLayer(USArail)
+            map.removeLayer(CDNrail)
+        
+        });
+      $("#show_all").click(function() {
+            map.addLayer(intersects)
+            map.addLayer(main_alignment)
+            map.addLayer(communities)
+            map.addLayer(intersects_alt)
+            map.addLayer(communities_alt)
+            map.addLayer(alt_alignment)
+        });
+      $("#showAllExistingRail").click(function() {
+            map.addLayer(USArail)
+            map.addLayer(CDNrail)
+        
+        });
+      $("#hideAllExistingRail").click(function() {
+            map.removeLayer(USArail)
+            map.removeLayer(CDNrail)
+        
+        });
+      
+      
+      
+    });
+      
+      
+      
+      
+    </script>
+  
+
+</body></html>
