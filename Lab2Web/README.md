@@ -1,6 +1,6 @@
 What is the Best Alignment for a Proposed Railway (both Passenger and Freight Rail) between Alberta and Alaska? 
 
-![](images/filename Picture2.png)
+![](images/Picture2.png)
 
 https://ubc-geos472-spring2022.github.io/msinghhunjan-web/Lab2Web/index.html
 
